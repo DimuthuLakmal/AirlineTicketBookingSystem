@@ -152,7 +152,7 @@ router.get('/view_booking_passenger/user_id/:user_id', function(req, res, next) 
     var con = mysql.createConnection({
         host: "166.62.27.168",
         user: "dimuthu",
-        password: "0773432552ijse4Ever!",
+        password: "0773432552ijse4E",
         database: "airticketbooking",
         dateStrings:true,
     });

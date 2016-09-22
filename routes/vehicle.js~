@@ -150,9 +150,9 @@ router.get('/update_booking/booking_id/:booking_id/status/:status', function(req
 router.get('/view_booking_passenger/user_id/:user_id', function(req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "ijse",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
         database: "airticketbooking",
         dateStrings:true,
     });
