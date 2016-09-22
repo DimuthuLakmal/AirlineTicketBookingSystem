@@ -165,9 +165,9 @@ router.get('/login/username/:username/password/:password', function(req, res, ne
   var password = req.params.password;
   var con = mysql.createConnection({
     host: "166.62.27.168",
-    user: "dimuthu",
-    password: "0773432552ijse4E",
-    database: "airticketbooking",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
   });
   login(con,username,password,res);
 });

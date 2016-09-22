@@ -31,10 +31,10 @@ function handle_database(req, res) {
 router.get('/documents/user_id/:user_id', function (req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "166.62.27.168",
-    	user: "dimuthu",
-    	password: "0773432552ijse4E",
-    	database: "airticketbooking",
+        host: "localhost",
+        user: "root",
+        password: "ijse",
+        database: "airticketbooking",
         dateStrings:true,
     });
     hasDocuments(con, user_id, res);
