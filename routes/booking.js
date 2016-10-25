@@ -93,11 +93,10 @@ function view_booking(con,req,res) {
 router.get('/documents/user_id/:user_id', function (req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "ijse",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
         database: "airticketbooking",
-        dateStrings:true,
     });
     hasDocuments(con, user_id, res);
 
@@ -107,11 +106,10 @@ router.get('/documents/user_id/:user_id', function (req, res, next) {
 router.get('/flight/user/:user/from/:from/to/:to/date/:date/passengers/:passengers/direct/:direct/price/:price/carrier/:carrier', function (req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "ijse",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
         database: "airticketbooking",
-        dateStrings:true,
     });
     book_flight(con,req, res);
 
@@ -121,11 +119,10 @@ router.get('/flight/user/:user/from/:from/to/:to/date/:date/passengers/:passenge
 router.get('/update/booking_id/:booking_id/status/:status', function (req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "ijse",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
         database: "airticketbooking",
-        dateStrings:true,
     });
     update_booking(con,req, res);
 
@@ -135,11 +132,10 @@ router.get('/update/booking_id/:booking_id/status/:status', function (req, res, 
 router.get('/view/user/:user', function (req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "ijse",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
         database: "airticketbooking",
-        dateStrings:true,
     });
     view_booking(con,req, res);
 
