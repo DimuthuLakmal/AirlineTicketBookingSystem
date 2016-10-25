@@ -34,9 +34,9 @@ function handle_database(req,res) {
     var country = req.params.country;
     var con = mysql.createConnection({
         host: "166.62.27.168",
-    	user: "dimuthu",
-    	password: "0773432552ijse4E",
-    	database: "airticketbooking",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
 
     retrieveAirports(con,country,res);

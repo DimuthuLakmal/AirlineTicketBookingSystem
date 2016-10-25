@@ -79,6 +79,8 @@ function signup_passenger(con,req,res) {
 }
 
 function signup_driver(con,req,res) {
+  var latitude = req.params.latitude;
+  var longitude  = req.params.longitude;
   async.waterfall([
 
     function(callback){
@@ -110,7 +112,7 @@ function signup_driver(con,req,res) {
     function(user_id, callback){
       if(req.params.type === 'Driver'){
         var licence_no = req.params.licence_no;
-        var driver = {id:user_id, licence_no:licence_no};
+        var driver = {id:user_id, licence_no:licence_no,latitude:latitude,longitude:longitude};
 
         con.query('INSERT INTO driver SET ?',driver, function (err) {
           if (err) throw err;
@@ -186,7 +188,7 @@ router.get('/signup/username/:username/password/:password/email/:email/mobile/:m
 });
 
 /* GET users signup_driver */
-router.get('/signup/username/:username/password/:password/email/:email/mobile/:mobile/country/:country/type/:type/licence_no/:licence_no', function(req, res, next) {
+router.get('/signup/username/:username/password/:password/email/:email/mobile/:mobile/country/:country/type/:type/licence_no/:licence_no/latitude/:latitude/longitude/:longitude', function(req, res, next) {
   var con = mysql.createConnection({
     host: "166.62.27.168",
     user: "dimuthu",

@@ -69,9 +69,9 @@ router.get('/autosearch/keyword/:keyword', function (req, res, next) {
     var keyword = req.params.keyword;
     var con = mysql.createConnection({
         host: "166.62.27.168",
-    	user: "dimuthu",
-    	password: "0773432552ijse4E",
-    	database: "airticketbooking",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
     autosearch(con,keyword,res);
 });
@@ -80,9 +80,9 @@ router.get('/searchcode/keyword/:keyword', function (req, res, next) {
     var keyword = req.params.keyword;
     var con = mysql.createConnection({
         host: "166.62.27.168",
-    	user: "dimuthu",
-    	password: "0773432552ijse4E",
-    	database: "airticketbooking",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
     searchShortCode(con,keyword,res);
 });

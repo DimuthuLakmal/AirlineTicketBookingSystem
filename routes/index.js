@@ -63,9 +63,9 @@ function handle_database(req,res) {
     var direct = req.params.direct;
     var con = mysql.createConnection({
         host: "166.62.27.168",
-    	user: "dimuthu",
-    	password: "0773432552ijse4E",
-    	database: "airticketbooking",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
 
     retrieveFlights(con,start,end,date,passengers,direct,res);

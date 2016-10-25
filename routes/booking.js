@@ -25,8 +25,7 @@ function hasDocuments(con, user_id, res) {
 }
 
 function book_flight(con, req, res) {
-	
-        async.waterfall([
+    async.waterfall([
 
         function(callback){
             var user_id = req.params.user;
@@ -61,8 +60,8 @@ function book_flight(con, req, res) {
 
             from_email = new helper.Email("kjtdimuthu.13@cse.mrt.ac.lk")
             to_email = new helper.Email(email)
-            subject = "Sending with SendGrid is Fun"
-            content = new helper.Content("text/plain", "and easy to do anywhere, even with Node.js")
+            subject = "Ticket Booking"
+            content = new helper.Content("text/plain", "Thank you for booking. If any inquiry call +94777323498")
             mail = new helper.Mail(from_email, subject, to_email, content)
 
             var sg = require('sendgrid')('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');
@@ -84,7 +83,7 @@ function book_flight(con, req, res) {
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         res.jsonp(result);
     });
-	
+
 }
 
 function update_booking(con,req,res) {
@@ -132,6 +131,7 @@ router.get('/documents/user_id/:user_id', function (req, res, next) {
         user: "dimuthu",
         password: "0773432552ijse4E",
         database: "airticketbooking",
+        dateStrings:true,
     });
     hasDocuments(con, user_id, res);
 
@@ -145,6 +145,7 @@ router.get('/flight/user/:user/from/:from/to/:to/date/:date/passengers/:passenge
         user: "dimuthu",
         password: "0773432552ijse4E",
         database: "airticketbooking",
+        dateStrings:true,
     });
     book_flight(con,req, res);
 
@@ -158,6 +159,7 @@ router.get('/update/booking_id/:booking_id/status/:status', function (req, res, 
         user: "dimuthu",
         password: "0773432552ijse4E",
         database: "airticketbooking",
+        dateStrings:true,
     });
     update_booking(con,req, res);
 
@@ -171,6 +173,7 @@ router.get('/view/user/:user', function (req, res, next) {
         user: "dimuthu",
         password: "0773432552ijse4E",
         database: "airticketbooking",
+        dateStrings:true,
     });
     view_booking(con,req, res);
 

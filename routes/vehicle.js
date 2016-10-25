@@ -5,9 +5,21 @@ var async = require('async');
 
 function add_vehicle(con,user_id,vehicle_no,passenger,type,res) {
     async.waterfall([
-
         function(callback){
-            var vehicle = {user_id:user_id,vehicle_no:vehicle_no,passenger:passenger,type:type};
+            var lat = '';
+            var lng = '';
+            con.query('SELECT latitude,longitude FROM driver WHERE id=\''+user_id+'\'', function (err, rows) {
+                if (err) throw err;
+                for (i = 0; i < rows.length; i++) {
+                    lat = rows[i].latitude;
+                    lng = rows[i].longitude;
+                }
+                callback(null,lat,lng);
+            });
+
+        },
+        function(lat,lan,callback){
+            var vehicle = {user_id:user_id,vehicle_no:vehicle_no,passenger:passenger,type:type,lat:lat,lan:lan};
 
             con.query('INSERT INTO vehicle SET ?',vehicle, function (err) {
                 if (err) throw err;

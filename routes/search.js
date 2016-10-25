@@ -37,6 +37,7 @@ function retrieveFlights(con, start, end, date, passengers, direct, res) {
             };
 
             qpx.getInfo(body, function (error, data) {
+                console.log(data.trips);
                 if (data.trips.tripOption) {
                     console.log(data.trips);
                     var carriers = data.trips.data.carrier;
@@ -81,9 +82,9 @@ function handle_database(req, res) {
     var direct = req.params.direct;
     var con = mysql.createConnection({
         host: "166.62.27.168",
-    	user: "dimuthu",
-    	password: "0773432552ijse4E",
-    	database: "airticketbooking",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
 
     retrieveFlights(con, start, end, date, passengers, direct, res);
