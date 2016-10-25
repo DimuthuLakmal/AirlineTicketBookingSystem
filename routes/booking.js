@@ -25,7 +25,8 @@ function hasDocuments(con, user_id, res) {
 }
 
 function book_flight(con, req, res) {
-    async.waterfall([
+	
+        async.waterfall([
 
         function(callback){
             var user_id = req.params.user;
@@ -41,15 +42,25 @@ function book_flight(con, req, res) {
 
             con.query('INSERT INTO booking SET ?',booking, function (err) {
                 if (err) throw err;
-                callback(null);
+                callback(null,user_id);
             });
 
         },
-        function (callback) {
+        function(user_id,callback){
+            var email = '';
+            con.query('SELECT email FROM user WHERE user_id=\''+user_id+'\'', function (err, rows) {
+                if (err) throw err;
+                for (i = 0; i < rows.length; i++) {
+                    email = rows[i].email;
+                }
+                callback(null,email);
+            });
+        },
+        function (email, callback) {
             var helper = require('sendgrid').mail
 
             from_email = new helper.Email("kjtdimuthu.13@cse.mrt.ac.lk")
-            to_email = new helper.Email("kjtdimuthu@gmail.com")
+            to_email = new helper.Email(email)
             subject = "Sending with SendGrid is Fun"
             content = new helper.Content("text/plain", "and easy to do anywhere, even with Node.js")
             mail = new helper.Mail(from_email, subject, to_email, content)
@@ -73,7 +84,7 @@ function book_flight(con, req, res) {
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         res.jsonp(result);
     });
-
+	
 }
 
 function update_booking(con,req,res) {
