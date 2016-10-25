@@ -68,10 +68,10 @@ function searchShortCode(con,keyword,res){
 router.get('/autosearch/keyword/:keyword', function (req, res, next) {
     var keyword = req.params.keyword;
     var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+        host: "us-cdbr-iron-east-04.cleardb.net",
+        user: "b368700be279d3",
+        password: "7d47c6dc",
+        database: "heroku_f29a3ff653c345e",
     });
     autosearch(con,keyword,res);
 });
@@ -79,10 +79,10 @@ router.get('/autosearch/keyword/:keyword', function (req, res, next) {
 router.get('/searchcode/keyword/:keyword', function (req, res, next) {
     var keyword = req.params.keyword;
     var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+        host: "us-cdbr-iron-east-04.cleardb.net",
+        user: "b368700be279d3",
+        password: "7d47c6dc",
+        database: "heroku_f29a3ff653c345e",
     });
     searchShortCode(con,keyword,res);
 });
