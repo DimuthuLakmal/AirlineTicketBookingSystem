@@ -166,10 +166,10 @@ router.get('/login/username/:username/password/:password', function(req, res, ne
   var username = req.params.username;
   var password = req.params.password;
   var con = mysql.createConnection({
-    host: "us-cdbr-iron-east-04.cleardb.net",
-    user: "b368700be279d3",
-    password: "7d47c6dc",
-    database: "heroku_f29a3ff653c345e",
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
   });
   login(con,username,password,res);
 });
@@ -177,10 +177,10 @@ router.get('/login/username/:username/password/:password', function(req, res, ne
 /* GET users signup_passenger */
 router.get('/signup/username/:username/password/:password/email/:email/mobile/:mobile/country/:country/type/:type/firstname/:firstname/middlename/:middlename/lastname/:lastname/gender/:gender/meal_preference/:meal_preference', function(req, res, next) {
   var con = mysql.createConnection({
-    host: "us-cdbr-iron-east-04.cleardb.net",
-    user: "b368700be279d3",
-    password: "7d47c6dc",
-    database: "heroku_f29a3ff653c345e",
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
   });
 
   signup_passenger(con, req, res);
@@ -190,10 +190,10 @@ router.get('/signup/username/:username/password/:password/email/:email/mobile/:m
 /* GET users signup_driver */
 router.get('/signup/username/:username/password/:password/email/:email/mobile/:mobile/country/:country/type/:type/licence_no/:licence_no/latitude/:latitude/longitude/:longitude', function(req, res, next) {
   var con = mysql.createConnection({
-    host: "us-cdbr-iron-east-04.cleardb.net",
-    user: "b368700be279d3",
-    password: "7d47c6dc",
-    database: "heroku_f29a3ff653c345e",
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
   });
 
   signup_driver(con, req, res);
@@ -202,10 +202,10 @@ router.get('/signup/username/:username/password/:password/email/:email/mobile/:m
 
 router.get('/signup/documents/user_id/:user_id/document_no/:document_no/issuing_authority/:issuing_authority/dob/:dob/nationality/:nationality/expire_date/:expire_date', function(req, res, next) {
   var con = mysql.createConnection({
-    host: "us-cdbr-iron-east-04.cleardb.net",
-    user: "b368700be279d3",
-    password: "7d47c6dc",
-    database: "heroku_f29a3ff653c345e",
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
   });
 
   signup_documents(con, req, res);

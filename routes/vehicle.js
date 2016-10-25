@@ -119,10 +119,10 @@ router.get('/add_vehicle/user_id/:user_id/vehicle_no/:vehicle_no/passenger/:pass
     var passenger = req.params.passenger;
     var type = req.params.type;
     var con = mysql.createConnection({
-        host: "us-cdbr-iron-east-04.cleardb.net",
-        user: "b368700be279d3",
-        password: "7d47c6dc",
-        database: "heroku_f29a3ff653c345e",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
     add_vehicle(con,user_id,vehicle_no,passenger,type,res);
 });
@@ -137,10 +137,10 @@ router.get('/add_booking/user_id/:user_id/vehicle_no/:vehicle_no/from/:from/to/:
     var time = req.params.time;
     var passengers  = req.params.passengers;
     var con = mysql.createConnection({
-        host: "us-cdbr-iron-east-04.cleardb.net",
-        user: "b368700be279d3",
-        password: "7d47c6dc",
-        database: "heroku_f29a3ff653c345e",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
     book_vehicle(con,user_id,vehicle_no,from,to,date,time,passengers,res);
 });
@@ -150,10 +150,10 @@ router.get('/update_booking/booking_id/:booking_id/status/:status', function(req
     var booking_id = req.params.booking_id;
     var status = req.params.status;
     var con = mysql.createConnection({
-        host: "us-cdbr-iron-east-04.cleardb.net",
-        user: "b368700be279d3",
-        password: "7d47c6dc",
-        database: "heroku_f29a3ff653c345e",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
     });
     update_booking(con,booking_id,status,res);
 });
@@ -162,10 +162,10 @@ router.get('/update_booking/booking_id/:booking_id/status/:status', function(req
 router.get('/view_booking_passenger/user_id/:user_id', function(req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "us-cdbr-iron-east-04.cleardb.net",
-        user: "b368700be279d3",
-        password: "7d47c6dc",
-        database: "heroku_f29a3ff653c345e",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
         dateStrings:true,
     });
     view_booking_passenger(con,user_id,res);
@@ -175,10 +175,10 @@ router.get('/view_booking_passenger/user_id/:user_id', function(req, res, next) 
 router.get('/view_booking_drivers/user_id/:user_id', function(req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "us-cdbr-iron-east-04.cleardb.net",
-        user: "b368700be279d3",
-        password: "7d47c6dc",
-        database: "heroku_f29a3ff653c345e",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
         dateStrings:true,
     });
     view_booking_drivers(con,user_id,res);

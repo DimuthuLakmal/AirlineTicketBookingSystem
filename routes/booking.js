@@ -127,10 +127,10 @@ function view_booking(con,req,res) {
 router.get('/documents/user_id/:user_id', function (req, res, next) {
     var user_id = req.params.user_id;
     var con = mysql.createConnection({
-        host: "us-cdbr-iron-east-04.cleardb.net",
-        user: "b368700be279d3",
-        password: "7d47c6dc",
-        database: "heroku_f29a3ff653c345e",
+        host: "166.62.27.168",
+        user: "dimuthu",
+        password: "0773432552ijse4E",
+        database: "airticketbooking",
         dateStrings:true,
     });
     hasDocuments(con, user_id, res);
