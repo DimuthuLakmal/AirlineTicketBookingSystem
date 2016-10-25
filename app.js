@@ -13,6 +13,7 @@ var map = require('./routes/map');
 var booking = require('./routes/booking');
 var vehicle = require('./routes/vehicle');
 var vehicle_search = require('./routes/vehicle_search');
+var test = require('./routes/test');
 
 var app = express();
 
@@ -36,6 +37,7 @@ app.use('/map', map);
 app.use('/booking', booking);
 app.use('/vehicle', vehicle);
 app.use('/vehicle_search', vehicle_search);
+app.use('/test', test);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
