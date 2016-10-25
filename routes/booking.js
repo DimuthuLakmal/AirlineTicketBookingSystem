@@ -48,7 +48,7 @@ function book_flight(con, req, res) {
         },
         function(user_id,callback){
             var email = '';
-            con.query('SELECT email FROM user WHERE user_id=\''+user_id+'\'', function (err, rows) {
+            con.query('SELECT email FROM user WHERE id=\''+user_id+'\'', function (err, rows) {
                 if (err) throw err;
                 for (i = 0; i < rows.length; i++) {
                     email = rows[i].email;
