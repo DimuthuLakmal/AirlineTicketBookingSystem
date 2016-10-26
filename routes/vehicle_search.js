@@ -3,6 +3,12 @@ var router = express.Router();
 var mysql  =  require('mysql');
 var async = require('async');
 
+var pool  = mysql.createPool({
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
+});
 
 var results=[];
 function search_vehicle(con,airport,passengers,type,res) {
@@ -27,6 +33,7 @@ function search_vehicle(con,airport,passengers,type,res) {
                     vehicleDetails = {username:row.username,email:row.email,mobile:row.mobile,vehicle_no:row.vehicle_no,passenger:row.passenger,type:row.type,lat:row.lat,lan:row.lan};
                     results.push(vehicleDetails);
                 }
+                con.release();
                 callback(null,results);
             });
         }
@@ -41,13 +48,10 @@ router.get('/airport/:airport/passengers/:passengers/type/:type', function(req, 
     var airport = req.params.airport;
     var passengers = req.params.passengers;
     var type = req.params.type;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+    pool.getConnection(function(err, connection) {
+        search_vehicle(connection,airport,passengers,type,res);
     });
-    search_vehicle(con,airport,passengers,type,res);
+
 });
 
 module.exports = router;

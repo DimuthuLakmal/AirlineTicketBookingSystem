@@ -4,6 +4,13 @@ var router = express.Router();
 var mysql  =  require('mysql');
 var async = require('async');
 
+var pool  = mysql.createPool({
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
+});
+
 function autosearch(con,keyword,res) {
     var results=[];
     async.waterfall([
@@ -32,6 +39,7 @@ function autosearch(con,keyword,res) {
                     var country = rows[i].country;
                     results.push(name);
                 };
+                con.release();
                 callback(null, results);
             });
         }
@@ -54,6 +62,7 @@ function searchShortCode(con,keyword,res){
                     var name = rows[i].name;
                     results.push({shortcode:short_code,name:name});
                 };
+                con.release();
                 callback(null,results);
             });
         }
@@ -67,24 +76,18 @@ function searchShortCode(con,keyword,res){
 /* GET users listing. */
 router.get('/autosearch/keyword/:keyword', function (req, res, next) {
     var keyword = req.params.keyword;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+    pool.getConnection(function(err, con) {
+        autosearch(con,keyword,res);
     });
-    autosearch(con,keyword,res);
+
 });
 
 router.get('/searchcode/keyword/:keyword', function (req, res, next) {
     var keyword = req.params.keyword;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+    pool.getConnection(function(err, con) {
+        searchShortCode(con,keyword,res);
     });
-    searchShortCode(con,keyword,res);
+
 });
 
 module.exports = router;

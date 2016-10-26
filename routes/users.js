@@ -3,6 +3,13 @@ var router = express.Router();
 var mysql  =  require('mysql');
 var async = require('async');
 
+var pool  = mysql.createPool({
+  host: "166.62.27.168",
+  user: "dimuthu",
+  password: "0773432552ijse4E",
+  database: "airticketbooking",
+});
+
 function login(con,username,password,res) {
   async.waterfall([
     function(callback){
@@ -14,6 +21,7 @@ function login(con,username,password,res) {
           user_id = rows[i].id;
           type = rows[i].type;
         };
+        con.release();
         callback(null, user_id,type);
       });
     },
@@ -67,6 +75,7 @@ function signup_passenger(con,req,res) {
 
         con.query('INSERT INTO passenger SET ?',passenger, function (err) {
           if (err) throw err;
+          con.release();
           callback(null, user_id);
         });
       }
@@ -116,6 +125,7 @@ function signup_driver(con,req,res) {
 
         con.query('INSERT INTO driver SET ?',driver, function (err) {
           if (err) throw err;
+          con.release();
           callback(null, user_id);
         });
       }
@@ -151,6 +161,7 @@ function signup_documents(con,req,res) {
         for(i=0;i<rows.length;i++){
           document_id = rows[i].document_id;
         };
+        con.release();
         callback(null,document_id);
       });
 
@@ -165,47 +176,35 @@ function signup_documents(con,req,res) {
 router.get('/login/username/:username/password/:password', function(req, res, next) {
   var username = req.params.username;
   var password = req.params.password;
-  var con = mysql.createConnection({
-    host: "166.62.27.168",
-    user: "dimuthu",
-    password: "0773432552ijse4E",
-    database: "airticketbooking",
+  pool.getConnection(function(err, con) {
+    login(con,username,password,res);
   });
-  login(con,username,password,res);
+
 });
 
 /* GET users signup_passenger */
 router.get('/signup/username/:username/password/:password/email/:email/mobile/:mobile/country/:country/type/:type/firstname/:firstname/middlename/:middlename/lastname/:lastname/gender/:gender/meal_preference/:meal_preference', function(req, res, next) {
-  var con = mysql.createConnection({
-    host: "166.62.27.168",
-    user: "dimuthu",
-    password: "0773432552ijse4E",
-    database: "airticketbooking",
+  pool.getConnection(function(err, con) {
+    signup_passenger(con, req, res);
   });
 
-  signup_passenger(con, req, res);
+
 
 });
 
 /* GET users signup_driver */
 router.get('/signup/username/:username/password/:password/email/:email/mobile/:mobile/country/:country/type/:type/licence_no/:licence_no/latitude/:latitude/longitude/:longitude', function(req, res, next) {
-  var con = mysql.createConnection({
-    host: "166.62.27.168",
-    user: "dimuthu",
-    password: "0773432552ijse4E",
-    database: "airticketbooking",
+
+  pool.getConnection(function(err, con) {
+    signup_driver(con, req, res);
   });
 
-  signup_driver(con, req, res);
 
 });
 
 router.get('/signup/documents/user_id/:user_id/document_no/:document_no/issuing_authority/:issuing_authority/dob/:dob/nationality/:nationality/expire_date/:expire_date', function(req, res, next) {
-  var con = mysql.createConnection({
-    host: "166.62.27.168",
-    user: "dimuthu",
-    password: "0773432552ijse4E",
-    database: "airticketbooking",
+  pool.getConnection(function(err, con) {
+    signup_documents(con, req, res);
   });
 
   signup_documents(con, req, res);

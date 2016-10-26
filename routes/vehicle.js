@@ -3,6 +3,14 @@ var router = express.Router();
 var mysql  =  require('mysql');
 var async = require('async');
 
+var pool  = mysql.createPool({
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
+    dateStrings:true,
+});
+
 function add_vehicle(con,user_id,vehicle_no,passenger,type,res) {
     async.waterfall([
         function(callback){
@@ -23,6 +31,7 @@ function add_vehicle(con,user_id,vehicle_no,passenger,type,res) {
 
             con.query('INSERT INTO vehicle SET ?',vehicle, function (err) {
                 if (err) throw err;
+                con.release();
                 callback(null,"Success");
             });
 
@@ -50,6 +59,7 @@ function book_vehicle(con,user_id,vehicle_no,from,to,date,time,passengers,res) {
 
             con.query('INSERT INTO booking_vehicle SET ?',vehicle_booking, function (err) {
                 if (err) throw err;
+                con.release();
                 callback(null,"Success");
             });
 
@@ -65,6 +75,7 @@ function update_booking(con,booking_id,status,res) {
         function(callback){
             con.query('UPDATE booking_vehicle SET status=? WHERE id=?', [status, booking_id],function (err) {
                 if (err) throw err;
+                con.release();
                 callback(null,"Success");
             });
         },
@@ -84,6 +95,7 @@ function view_booking_passenger(con,user_id,res) {
                     var row = rows[i];
                     results.push(row);
                 }
+                con.release();
                 callback(null,results);
             });
         },
@@ -103,6 +115,7 @@ function view_booking_drivers(con,user_id,res) {
                     var row = rows[i];
                     results.push(row);
                 }
+                con.release();
                 callback(null,results);
             });
         },
@@ -118,13 +131,10 @@ router.get('/add_vehicle/user_id/:user_id/vehicle_no/:vehicle_no/passenger/:pass
     var vehicle_no = req.params.vehicle_no;
     var passenger = req.params.passenger;
     var type = req.params.type;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+    pool.getConnection(function(err, con) {
+        add_vehicle(con,user_id,vehicle_no,passenger,type,res);
     });
-    add_vehicle(con,user_id,vehicle_no,passenger,type,res);
+
 });
 
 /* GET register vehicle. */
@@ -136,52 +146,38 @@ router.get('/add_booking/user_id/:user_id/vehicle_no/:vehicle_no/from/:from/to/:
     var date = req.params.date;
     var time = req.params.time;
     var passengers  = req.params.passengers;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+    pool.getConnection(function(err, con) {
+        book_vehicle(con,user_id,vehicle_no,from,to,date,time,passengers,res);
     });
-    book_vehicle(con,user_id,vehicle_no,from,to,date,time,passengers,res);
+
 });
 
 /* GET update status of bookings */
 router.get('/update_booking/booking_id/:booking_id/status/:status', function(req, res, next) {
     var booking_id = req.params.booking_id;
     var status = req.params.status;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
-    });
+    pool.getConnection(function(err, con) {
+        signup_documents(con, req, res);
+    });s
     update_booking(con,booking_id,status,res);
 });
 
 /* GET view bookings for passengers*/
 router.get('/view_booking_passenger/user_id/:user_id', function(req, res, next) {
     var user_id = req.params.user_id;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
-        dateStrings:true,
+    pool.getConnection(function(err, con) {
+        view_booking_passenger(con,user_id,res);
     });
-    view_booking_passenger(con,user_id,res);
+
 });
 
 /* GET view bookings for drivers*/
 router.get('/view_booking_drivers/user_id/:user_id', function(req, res, next) {
     var user_id = req.params.user_id;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
-        dateStrings:true,
+    pool.getConnection(function(err, con) {
+        view_booking_drivers(con,user_id,res);
     });
-    view_booking_drivers(con,user_id,res);
+
 });
 
 module.exports = router;

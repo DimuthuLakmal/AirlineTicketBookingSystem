@@ -9,6 +9,13 @@ var result = [];
 var apiKey = 'AIzaSyA1668Pe8Ar95A9vko4AbD5FeJ-FEeBspw';
 var qpx = new API(apiKey);
 
+var pool  = mysql.createPool({
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
+});
+
 function retrieveFlights(con, start, end, date, passengers, direct, res) {
     async.waterfall([
         function (callback) {
@@ -64,6 +71,7 @@ function retrieveFlights(con, start, end, date, passengers, direct, res) {
                         });
                     }
                 }
+                con.release();
                 callback(error, tripOptions);
             });
         }
@@ -80,14 +88,9 @@ function handle_database(req, res) {
     var date = req.params.date;
     var passengers = req.params.passengers;
     var direct = req.params.direct;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+    pool.getConnection(function(err, con) {
+        retrieveFlights(con, start, end, date, passengers, direct, res);
     });
-
-    retrieveFlights(con, start, end, date, passengers, direct, res);
 
 }
 

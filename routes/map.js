@@ -4,6 +4,12 @@ var router = express.Router();
 var mysql  =  require('mysql');
 var async = require('async');
 
+var pool  = mysql.createPool({
+    host: "166.62.27.168",
+    user: "dimuthu",
+    password: "0773432552ijse4E",
+    database: "airticketbooking",
+});
 
 function retrieveAirports(con,country,res) {
 
@@ -19,6 +25,7 @@ function retrieveAirports(con,country,res) {
                         var name = rows[i].name;
                         airports.push({'id':airport_id,'lat':lat,'lan':lan,'name':name});
                     };
+                con.release();
                 callback(null, airports);
             });
         }
@@ -32,14 +39,11 @@ function retrieveAirports(con,country,res) {
 
 function handle_database(req,res) {
     var country = req.params.country;
-    var con = mysql.createConnection({
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+
+    pool.getConnection(function(err, con) {
+        retrieveAirports(con,country,res);
     });
 
-    retrieveAirports(con,country,res);
 
 }
 
