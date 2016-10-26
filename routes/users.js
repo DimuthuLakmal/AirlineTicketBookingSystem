@@ -207,8 +207,6 @@ router.get('/signup/documents/user_id/:user_id/document_no/:document_no/issuing_
     signup_documents(con, req, res);
   });
 
-  signup_documents(con, req, res);
-
 });
 
 module.exports = router;

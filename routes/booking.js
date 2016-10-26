@@ -69,7 +69,7 @@ function book_flight(con, req, res) {
             var helper = require('sendgrid').mail
 
             from_email = new helper.Email("kjtdimuthu.13@cse.mrt.ac.lk")
-            to_email = new helper.Email(email)
+            to_email = new helper.Email('nuwan910730@gmail.com')
             subject = "Ticket Booking"
             content = new helper.Content("text/plain", "Thank you for booking. If any inquiry call +94777323498")
             mail = new helper.Mail(from_email, subject, to_email, content)
