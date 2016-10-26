@@ -157,9 +157,9 @@ router.get('/update_booking/booking_id/:booking_id/status/:status', function(req
     var booking_id = req.params.booking_id;
     var status = req.params.status;
     pool.getConnection(function(err, con) {
-        signup_documents(con, req, res);
-    });s
-    update_booking(con,booking_id,status,res);
+        update_booking(con,booking_id,status,res);
+    });
+
 });
 
 /* GET view bookings for passengers*/
