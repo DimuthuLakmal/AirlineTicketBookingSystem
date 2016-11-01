@@ -96,7 +96,7 @@ function book_flight(con, req, res) {
             console.log("Mobile 2 "+mobile);
             // Twilio Credentials
             var accountSid = 'ACb1c6f0ccb34ac2d7aaee85cc8a9d5a34';
-            var authToken = '[AuthToken]';
+            var authToken = '8bef9138453179638cc15b3fd197a0ae';
 
             //require the Twilio module and create a REST client
             var client = require('twilio')(accountSid, authToken);
