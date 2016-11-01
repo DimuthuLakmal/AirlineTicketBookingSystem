@@ -56,16 +56,18 @@ function book_flight(con, req, res) {
         },
         function(user_id,callback){
             var email = '';
-            con.query('SELECT email FROM user WHERE id=\''+user_id+'\'', function (err, rows) {
+            var mobile = '';
+            con.query('SELECT email,mobile FROM user WHERE id=\''+user_id+'\'', function (err, rows) {
                 if (err) throw err;
                 for (i = 0; i < rows.length; i++) {
                     email = rows[i].email;
+                    mobile = rows[i].mobile;
                 }
                 con.release();
-                callback(null,email);
+                callback(null,email,mobile);
             });
         },
-        function (email, callback) {
+        function (email,mobile, callback) {
             var helper = require('sendgrid').mail
 
             from_email = new helper.Email("kjtdimuthu.13@cse.mrt.ac.lk")
@@ -85,6 +87,24 @@ function book_flight(con, req, res) {
                 console.log(response.statusCode)
                 console.log(response.body)
                 console.log(response.headers)
+            });
+
+            callback(null,mobile);
+        },
+        function (mobile, callback) {
+            // Twilio Credentials
+            var accountSid = 'ACb1c6f0ccb34ac2d7aaee85cc8a9d5a34';
+            var authToken = '[AuthToken]';
+
+            //require the Twilio module and create a REST client
+            var client = require('twilio')(accountSid, authToken);
+
+            client.messages.create({
+                to: mobile,
+                from: "+17542276508",
+                body: "You have successfully booked a ticket",
+            }, function(err, message) {
+                console.log(message.sid);
             });
 
             callback(null,"Success");
