@@ -104,7 +104,7 @@ function book_flight(con, req, res) {
                 from: "+17542276508",
                 body: "You have successfully booked a ticket",
             }, function(err, message) {
-                console.log(message.sid);
+                console.log(message);
             });
 
             callback(null,"Success");
