@@ -63,6 +63,7 @@ function book_flight(con, req, res) {
                     email = rows[i].email;
                     mobile = rows[i].mobile;
                 }
+                console.log("Mobile "+mobile);
                 con.release();
                 callback(null,email,mobile);
             });
@@ -92,6 +93,7 @@ function book_flight(con, req, res) {
             callback(null,mobile);
         },
         function (mobile, callback) {
+            console.log("Mobile 2 "+mobile);
             // Twilio Credentials
             var accountSid = 'ACb1c6f0ccb34ac2d7aaee85cc8a9d5a34';
             var authToken = '[AuthToken]';
