@@ -85,6 +85,31 @@ function update_booking(con,booking_id,status,res) {
     });
 }
 
+function update_ratings(con,vehicle_no,ratings,res) {
+    async.waterfall([
+        function(callback){
+            var user_id = '';
+            con.query('SELECT user)id FROM vehicle WHERE vehicle_no=\''+vehicle_no+'\'', function (err, rows) {
+                if (err) throw err;
+                for (i = 0; i < rows.length; i++) {
+                    user_id = rows[i].user_id;
+                }
+                callback(null,user_id);
+            });
+        },
+        function(user_id,callback){
+            con.query('UPDATE driver SET ratings=? WHERE id=?', [ratings, user_id],function (err) {
+                if (err) throw err;
+                con.release();
+                callback(null,"Success");
+            });
+        },
+    ], function (err, result) {
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.jsonp(result);
+    });
+}
+
 function view_booking_passenger(con,user_id,res) {
     var results = [];
     async.waterfall([
@@ -161,6 +186,17 @@ router.get('/update_booking/booking_id/:booking_id/status/:status', function(req
     });
 
 });
+
+/* GET update ratings for drivers*/
+router.get('/update_ratings/vehicle_no/:vehicle_no/ratings/:ratings', function(req, res, next) {
+    var vehicle_no = req.params.vehicle_no;
+    var ratings = req.params.ratings;
+    pool.getConnection(function(err, con) {
+        update_ratings(con,vehicle_no,ratings,res);
+    });
+
+});
+
 
 /* GET view bookings for passengers*/
 router.get('/view_booking_passenger/user_id/:user_id', function(req, res, next) {
