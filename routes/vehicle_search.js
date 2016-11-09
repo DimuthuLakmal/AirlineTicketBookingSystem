@@ -25,12 +25,12 @@ function search_vehicle(con,airport,passengers,type,res) {
         },
         function(country,callback){
             var vehicleDetails = {};
-            con.query('SELECT * FROM user u, vehicle v WHERE v.type=\''+type+'\' AND v.passenger>='+passengers+' AND u.country=\''+country+'\' AND u.id=v.user_id', function (err, rows) {
+            con.query('SELECT * FROM user u,driver d, vehicle v WHERE v.type=\''+type+'\' AND v.passenger>='+passengers+' AND u.country=\''+country+'\' AND u.id=v.user_id AND d.id=u.id', function (err, rows) {
                 if (err) throw err;
                 for (i = 0; i < rows.length; i++) {
                     var row = rows[i];
                     console.log(row);
-                    vehicleDetails = {username:row.username,email:row.email,mobile:row.mobile,vehicle_no:row.vehicle_no,passenger:row.passenger,type:row.type,lat:row.lat,lan:row.lan};
+                    vehicleDetails = {username:row.username,email:row.email,mobile:row.mobile,vehicle_no:row.vehicle_no,passenger:row.passenger,type:row.type,lat:row.lat,lan:row.lan,ratings:row.ratings};
                     results.push(vehicleDetails);
                 }
                 con.release();
