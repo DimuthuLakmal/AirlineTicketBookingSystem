@@ -89,7 +89,7 @@ function update_ratings(con,vehicle_no,ratings,res) {
     async.waterfall([
         function(callback){
             var user_id = '';
-            con.query('SELECT user)id FROM vehicle WHERE vehicle_no=\''+vehicle_no+'\'', function (err, rows) {
+            con.query('SELECT user_id FROM vehicle WHERE vehicle_no=\''+vehicle_no+'\'', function (err, rows) {
                 if (err) throw err;
                 for (i = 0; i < rows.length; i++) {
                     user_id = rows[i].user_id;
