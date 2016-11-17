@@ -231,6 +231,23 @@ function reset_password_link(con,req,res){
   });
 }
 
+function update_password(con,req,res) {
+  async.waterfall([
+    function(callback){
+      var id = req.params.user_id;
+      var password = req.params.password;
+      con.query('UPDATE user SET password=? WHERE id=?', [password, id],function (err) {
+        if (err) throw err;
+        con.release();
+        callback(null,"Success");
+      });
+    },
+  ], function (err, result) {
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.jsonp(result);
+  });
+}
+
 /* GET users login. */
 router.get('/login/username/:username/password/:password', function(req, res, next) {
   var username = req.params.username;
@@ -248,7 +265,6 @@ router.get('/signup/username/:username/password/:password/email/:email/mobile/:m
   });
 
 
-
 });
 
 /* GET users signup_driver */
@@ -257,7 +273,6 @@ router.get('/signup/username/:username/password/:password/email/:email/mobile/:m
   pool.getConnection(function(err, con) {
     signup_driver(con, req, res);
   });
-
 
 });
 
@@ -268,9 +283,19 @@ router.get('/signup/documents/user_id/:user_id/document_no/:document_no/issuing_
 
 });
 
+//reset link
 router.get('/reset/email/:email', function(req, res, next) {
   pool.getConnection(function(err, con) {
     reset_password_link(con, req, res);
+  });
+
+});
+
+/* GET users update password. */
+router.get('/updatepassword/password/:password/user_id/:user_id', function(req, res, next) {
+
+  pool.getConnection(function(err, con) {
+    update_password(con,req,res);
   });
 
 });
