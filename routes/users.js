@@ -219,15 +219,15 @@ function reset_password_link(con,req,res){
         var forget_password = {user_id:user_id,code:randomNumber};
         con.query('INSERT INTO forget_password SET ?',forget_password, function (err) {
           if (err) throw err;
-          callback(null,randomNumber);
+          callback(null,randomNumber,user_id);
         });
       }else{
-        callback(null,randomNumber);
+        callback(null,randomNumber,user_id);
       }
     },
-  ], function (err, randomNumber) {
+  ], function (err, randomNumber,user_id) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    res.jsonp(randomNumber);
+    res.jsonp({random:randomNumber,user_id:user_id});
   });
 }
 
