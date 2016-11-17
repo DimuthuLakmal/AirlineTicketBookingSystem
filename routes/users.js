@@ -172,6 +172,65 @@ function signup_documents(con,req,res) {
   });
 }
 
+function reset_password_link(con,req,res){
+  async.waterfall([
+    function(callback){
+      var user_id=0;
+      con.query('SELECT id FROM user WHERE email=\''+req.params.email+'\'', function (err, rows) {
+        if (err) throw err;
+        for(i=0;i<rows.length;i++){
+          user_id = rows[i].id;
+        };
+        con.release();
+        callback(null,user_id);
+      });
+
+    },
+    function (user_id, callback) {
+      var randomNumber = 0;
+      if(user_id!=0){
+        var helper = require('sendgrid').mail
+
+        randomNumber = getRandomInt(1000,9999);
+        from_email = new helper.Email("kjtdimuthu.13@cse.mrt.ac.lk")
+        to_email = new helper.Email(req.params.email)
+        subject = "Reset Forgot Password"
+        content = new helper.Content("text/plain", "Your code is "+randomNumber);
+        mail = new helper.Mail(from_email, subject, to_email, content)
+
+        var sg = require('sendgrid')('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');
+        var request = sg.emptyRequest({
+          method: 'POST',
+          path: '/v3/mail/send',
+          body: mail.toJSON()
+        });
+
+        sg.API(request, function(error, response) {
+          console.log(response.statusCode)
+          console.log(response.body)
+          console.log(response.headers)
+        });
+      }
+      callback(null,randomNumber,user_id);
+    },
+    function(randomNumber,user_id,callback){
+      if(user_id!=0){
+        var email = req.params.email;
+        var forget_password = {user_id:user_id,code:randomNumber};
+        con.query('INSERT INTO forget_password SET ?',forget_password, function (err) {
+          if (err) throw err;
+          callback(null,randomNumber);
+        });
+      }else{
+        callback(null,randomNumber);
+      }
+    },
+  ], function (err, randomNumber) {
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    res.jsonp(randomNumber);
+  });
+}
+
 /* GET users login. */
 router.get('/login/username/:username/password/:password', function(req, res, next) {
   var username = req.params.username;
@@ -208,5 +267,17 @@ router.get('/signup/documents/user_id/:user_id/document_no/:document_no/issuing_
   });
 
 });
+
+router.get('/reset/email/:email', function(req, res, next) {
+  pool.getConnection(function(err, con) {
+    reset_password_link(con, req, res);
+  });
+
+});
+
+//Random Number Generation
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 module.exports = router;
