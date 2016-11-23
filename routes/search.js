@@ -55,13 +55,16 @@ function retrieveFlights(con, start, end, date, passengers, direct, res) {
                         var departureTime = tripOption.slice[0].segment[0].leg[0].departureTime;
                         var arrivalTime = tripOption.slice[0].segment[tripOption.slice[0].segment.length-1].leg[0].arrivalTime;
                         var carrierName="";
+                        var carrierNameURL = ""
                         for(j=0;j<carriers.length;j++){
                             if(carriers[j].code==carrier){
                                 carrierName = carriers[j].name;
+                                carrierNameURL = carrierName.replace(/\s/g, '').toLowerCase()+".png";
                             }
                         }
                         tripOptions.push({
                             'carrierName': carrierName,
+                            'carrierNameURL': carrierNameURL,
                             'price': tripOption.saleTotal,
                             'duration': tripOption.slice[0].duration,
                             'departureTime':departureTime,
