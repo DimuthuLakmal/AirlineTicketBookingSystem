@@ -59,7 +59,7 @@ function retrieveFlights(con, start, end, date, passengers, direct, res) {
                         for(j=0;j<carriers.length;j++){
                             if(carriers[j].code==carrier){
                                 carrierName = carriers[j].name;
-                                carrierNameURL = carrierName.replace(/\s/g, '').toLowerCase()+".png";
+                                carrierNameURL = 'img/airlines/'+carrierName.replace(/\s/g, '').toLowerCase()+".png";
                             }
                         }
                         tripOptions.push({
