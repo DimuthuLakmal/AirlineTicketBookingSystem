@@ -85,6 +85,25 @@ function retrieveFlights(con, start, end, date, passengers, direct, res) {
 
 }
 
+function searchName(con, req, res) {
+    var name = "";
+    async.waterfall([
+        function(callback){
+            con.query('SELECT name FROM airport WHERE short_code=\''+req.params.airport+'\'', function (err, rows) {
+                if (err) throw err;
+                for (i = 0; i < rows.length; i++) {
+                    name = rows[i].name;
+                }
+                con.release();
+                callback(null,name);
+            });
+        },
+    ], function (err, result) {
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        res.jsonp(result);
+    });
+}
+
 function handle_database(req, res) {
     var start = req.params.start;
     var end = req.params.end;
@@ -101,6 +120,12 @@ function handle_database(req, res) {
 router.get('/start/:start/end/:end/date/:date/passengers/:passengers/direct/:direct', function (req, res, next) {
     handle_database(req, res);
     //res.send(req.params.start);
+});
+
+router.get('/airport/:airport', function (req, res, next) {
+    pool.getConnection(function(err, con) {
+        searchName(con, req, res);
+    });
 });
 
 module.exports = router;
