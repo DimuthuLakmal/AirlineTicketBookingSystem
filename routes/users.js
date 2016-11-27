@@ -192,7 +192,7 @@ function reset_password_link(con,req,res){
         var helper = require('sendgrid').mail
 
         randomNumber = getRandomInt(1000,9999);
-        from_email = new helper.Email("kjtdimuthu.13@cse.mrt.ac.lk")
+        from_email = new helper.Email("ticketbooking.app@gmail.com")
         to_email = new helper.Email(req.params.email)
         subject = "Reset Forgot Password"
         content = new helper.Content("text/plain", "Your code is "+randomNumber);
