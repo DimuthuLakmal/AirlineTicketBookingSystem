@@ -10,10 +10,10 @@ var apiKey = 'AIzaSyA1668Pe8Ar95A9vko4AbD5FeJ-FEeBspw';
 var qpx = new API(apiKey);
 
 var pool  = mysql.createPool({
-    host: "166.62.27.168",
-    user: "dimuthu",
-    password: "0773432552ijse4E",
-    database: "airticketbooking",
+    host: "mysql1003.mochahost.com",
+    user: "avixteam_dimuthu",
+    password: "Dimuthu@123",
+    database: "avixteam_airticketbooking",
 });
 
 function retrieveFlights(con, start, end, date, passengers, direct, res) {

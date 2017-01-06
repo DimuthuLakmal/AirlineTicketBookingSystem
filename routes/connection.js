@@ -3,10 +3,10 @@ var mysql     =    require('mysql');
 module.exports = {
     pool : mysql.createPool({
         connectionLimit: 100, //important
-        host: "166.62.27.168",
-        user: "dimuthu",
-        password: "0773432552ijse4E",
-        database: "airticketbooking",
+        host: "mysql1003.mochahost.com",
+        user: "avixteam_dimuthu",
+        password: "Dimuthu@123",
+        database: "avixteam_airticketbooking",
         debug: false
     })
 }
