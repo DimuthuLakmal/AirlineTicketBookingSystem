@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Sign Up</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="js/angular-material/angular-material.min.css">
+        <link rel="stylesheet" href="css/home.css">
+        <link rel="stylesheet" href="css/searchresults.css">
+        <style>
+            md-radio-group.md-default-theme:not([disabled]) .md-primary .md-checked ._md-off, md-radio-group:not([disabled]) .md-primary .md-checked ._md-off, md-radio-group.md-default-theme:not([disabled]) .md-primary.md-checked ._md-off, md-radio-group:not([disabled]) .md-primary.md-checked ._md-off, md-radio-group.md-default-theme:not([disabled]).md-primary .md-checked ._md-off, md-radio-group:not([disabled]).md-primary .md-checked ._md-off, md-radio-group.md-default-theme:not([disabled]).md-primary.md-checked ._md-off, md-radio-group:not([disabled]).md-primary.md-checked ._md-off, md-radio-button.md-default-theme:not([disabled]) .md-primary .md-checked ._md-off, md-radio-button:not([disabled]) .md-primary .md-checked ._md-off, md-radio-button.md-default-theme:not([disabled]) .md-primary.md-checked ._md-off, md-radio-button:not([disabled]) .md-primary.md-checked ._md-off, md-radio-button.md-default-theme:not([disabled]).md-primary .md-checked ._md-off, md-radio-button:not([disabled]).md-primary .md-checked ._md-off, md-radio-button.md-default-theme:not([disabled]).md-primary.md-checked ._md-off, md-radio-button:not([disabled]).md-primary.md-checked ._md-off {
+                border-color: darkgray;
+            }
+            md-radio-button.md-default-theme.md-checked ._md-off, md-radio-button.md-checked ._md-off {
+                border-color: darkgray;
+            }
+        </style>
+    </head>
+    <body ng-app="ticketApp" ng-cloak>
+
+        <!-- Angular Material Dependencies -->
+        <script src="js/angular/angular.min.js"></script>
+        <script src="js/angular-animate/angular-animate.min.js"></script>
+        <script src="js/angular-aria/angular-aria.min.js"></script>
+
+
+        <!-- Angular Material Javascript now available via Google CDN; version 1.0.7 used here -->
+        <script src="js/angular-material/angular-material.min.js"></script>
+        <script>
+            angular
+                    .module('ticketApp', ['ngMaterial'])
+                    .controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log) {
+                        //signup
+                        $scope.signup = function () {
+                            localStorage.setItem("user_type", $scope.data.userType);
+                            window.location = 'signup_basic.html';
+                        }
+
+                    })
+
+
+        </script>
+        <div ng-controller="AppCtrl" layout="column" style="height:600px" ng-cloak>
+            <md-toolbar class="md-primary" md-scroll-shrink ng-if="true" style="background-color: yellow; color: black">
+                <h1 class="md-toolbar-tools">Sign Up</h1>
+            </md-toolbar>
+            <section layout="row" flex>
+                <md-content flex>
+                    <md-content style="padding-left: 40px;padding-right: 40px; top:40%;left:25%;position: fixed;"><br>
+                        <form name="loginForm">
+                            <div align="center">
+                                <md-radio-group ng-model="data.userType">
+                                    <md-radio-button value="Passenger" class="md-primary">Passenger</md-radio-button>
+                                    <md-radio-button value="Driver" class="md-primary"> Driver </md-radio-button>
+                                </md-radio-group>
+                            </div>
+                            <div align="center">
+                                <md-button type="submit" class="md-accent md-raised" ng-click="signup()" style="background-color: #0c0c0c;">Next</md-button>
+                            </div>
+                        </form>
+                    </md-content>
+                </md-content>
+            </section>
+        </div>
+    </body>
+</html>

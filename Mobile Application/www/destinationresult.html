@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Select Airport</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="js/angular-material/angular-material.min.css">
+        <link rel="stylesheet" href="css/home.css">
+        <link rel="stylesheet" href="css/searchresults.css">
+    </head>
+    <body ng-app="ticketApp" ng-cloak>
+
+        <!-- Angular Material Dependencies -->
+        <script src="js/angular/angular.min.js"></script>
+        <script src="js/angular-animate/angular-animate.min.js"></script>
+        <script src="js/angular-aria/angular-aria.min.js"></script>
+
+
+        <!-- Angular Material Javascript now available via Google CDN; version 1.0.7 used here -->
+        <script src="js/angular-material/angular-material.min.js"></script>    
+        <script>
+            angular
+                    .module('ticketApp', ['ngMaterial'])
+                    .controller('AppCtrl', function ($scope, $http, $timeout, $mdSidenav, $log) {
+                        $scope.toggleLeft = buildDelayedToggler('left');
+                        /**
+                         * Supplies a function that will continue to operate until the
+                         * time is up.
+                         */
+                        function debounce(func, wait, context) {
+                            var timer;
+                            return function debounced() {
+                                var context = $scope,
+                                        args = Array.prototype.slice.call(arguments);
+                                $timeout.cancel(timer);
+                                timer = $timeout(function () {
+                                    timer = undefined;
+                                    func.apply(context, args);
+                                }, wait || 10);
+                            };
+                        }
+                        /**
+                         * Build handler to open/close a SideNav; when animation finishes
+                         * report completion in console
+                         */
+                        function buildDelayedToggler(navID) {
+                            return debounce(function () {
+                                // Component lookup should always be available since we are not using `ng-if`
+                                $mdSidenav(navID)
+                                        .toggle()
+                                        .then(function () {
+                                            $log.debug("toggle " + navID + " is done");
+                                        });
+                            }, 200);
+                        }
+                        function buildToggler(navID) {
+                            return function () {
+                                // Component lookup should always be available since we are not using `ng-if`
+                                $mdSidenav(navID)
+                                        .toggle()
+                                        .then(function () {
+                                            $log.debug("toggle " + navID + " is done");
+                                        });
+                            }
+                        }
+
+                        //load results
+                        $scope.airports = JSON.parse(localStorage.getItem("to"));
+
+                        //links
+                        $scope.searchlink = function () {
+                            window.location = 'home.html';
+                        }
+                        $scope.recentsearchlink = function () {
+                            window.location = 'recentsearches.html';
+                        }
+                        $scope.cablink = function () {
+                            window.location = 'vehicle_search.html';
+                        }
+                        $scope.airportlink = function () {
+                            window.location = 'airportmap.html';
+                        }
+                        $scope.logout = function () {
+                            localStorage.removeItem("logged_user_id");
+                            localStorage.removeItem("logged_user_type");
+                            window.location = 'login.html';
+                        }
+                        $scope.viewcablink= function (){
+                            window.location = "view_vehicle_booking.html";
+                        }
+                        $scope.booking = function () {
+                            window.location = "view_booked_ticket.html";
+                        }
+
+                        //list clicks
+                        $scope.next = function (shortcode) {
+                            localStorage.setItem("selectedTo", shortcode);
+                            var from = localStorage.getItem("selectedFrom");
+                            var date = localStorage.getItem("departDate");
+                            var passenger = localStorage.getItem("passengers");
+                            var directFlight = localStorage.getItem("directFlight");
+                            var selectedFrom = localStorage.getItem("selectedFrom");
+                            //search Results
+                            $http.jsonp("https://airticketbookingapp.herokuapp.com/search/start/" + selectedFrom + "/end/" + shortcode + "/date/" + date + "/passengers/" + passenger + "/direct/" + directFlight + "?callback=JSON_CALLBACK")
+                                    .success(function (data, status, headers, config) {
+                                        localStorage.setItem("rawData", JSON.stringify(data));
+                                        var results = [];
+                                        for (i = 0; i < data.length; i++) {
+                                            var flightInfo = data[i];
+                                            var carrierNameURL = flightInfo.carrierNameURL;
+                                            var carrierName = flightInfo.carrierName;
+                                            var durationHours = Math.floor(flightInfo.duration / 60)+" Hrs";
+                                            var durationMins = (flightInfo.duration % 60)+" Mins";
+                                            var price = flightInfo.price;
+                                            var departureTime = flightInfo.departureTime;
+                                            var arrivalTime = flightInfo.arrivalTime;
+                                            results.push({carrierName: carrierName, carrierNameURL:carrierNameURL,durationHours: durationHours, durationMins: durationMins, price: price, departureTime: departureTime, arrivalTime: arrivalTime, to: shortcode, from: from});
+                                            localStorage.setItem("results", JSON.stringify(results));
+                                            window.location = 'results.html';
+                                        }
+
+                                    });
+                            //window.location = '/results.html';
+                        }
+                    })
+
+
+        </script>
+        <div ng-controller="AppCtrl" layout="column" style="height:600px;" ng-cloak>
+            <md-content>
+                <md-toolbar class="md-primary" md-scroll-shrink ng-if="true" style="background-color: yellow; color: black">
+                    <div class="md-toolbar-tools">
+                        <md-button class="md-icon-button" ng-click="toggleLeft()" aria-label="Settings">
+                            <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+                        </md-button>
+                        <h1 class="md-toolbar-tools">Destination</h1>
+                        <md-button class="md-icon-button" aria-label="More">
+                            <md-icon md-svg-icon="img/more_vert.svg"></md-icon>
+                        </md-button>
+
+                    </div>
+                </md-toolbar>
+            </md-content>
+            <section layout="row">
+                <md-sidenav
+                    class="md-sidenav-left"
+                    md-component-id="left"
+                    md-is-locked-open="$mdMedia('gt-md')"
+                    md-whiteframe="4">
+                    <md-toolbar class="md-theme-indigo" style="background-color: yellow">
+                        <h1 class="md-toolbar-tools" style="color: #0c0c0c">Menu</h1>
+                    </md-toolbar>
+                    <md-menu-content layout-fill>
+                        <md-menu-item>
+                            <md-button ng-click="searchlink()">
+                                <span class="glyphicon glyphicon-search"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Search</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="recentsearchlink()">
+                                <span class="glyphicon glyphicon-time"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Recent Search</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="booking()">
+                                <span class="glyphicon glyphicon-book"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;View Bookings</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="cablink()">
+                                <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Call A Cab</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="viewcablink()">
+                                <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Cab Bookings</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="airportlink()">
+                                <span class="glyphicon glyphicon-map-marker"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Airports</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="logout()">
+                                <span class="glyphicon glyphicon-yen"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Logout</strong>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-sidenav>
+                <md-content flex layout-padding>
+                    <div ng-cloak style="height: 500px">
+                        <md-list ng-repeat="airport in airports">
+                            <md-list-item ng-click="next(airport.shortcode)">
+                                <strong> {{airport.name}} ({{airport.shortcode}})</strong>
+                            </md-list-item><hr>
+                        </md-list>
+                    </div>
+                    <div flex></div>
+                </md-content>
+            </section>
+        </div>
+    </body>
+</html>

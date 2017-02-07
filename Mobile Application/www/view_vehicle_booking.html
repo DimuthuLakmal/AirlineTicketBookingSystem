@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>View Vehicle Booking</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="js/angular-material/angular-material.min.css">
+        <link rel="stylesheet" href="css/home.css">
+        <link rel="stylesheet" href="css/autocomplete.css">
+    </head>
+    <body ng-app="ticketApp" ng-cloak>
+
+        <!-- Angular Material Dependencies -->
+        <script type="text/javascript" src="js/moment.js"></script>
+        <script src="js/angular/angular.min.js"></script>
+        <script src="js/angular-animate/angular-animate.min.js"></script>
+        <script src="js/angular-aria/angular-aria.min.js"></script>
+        <script type="text/javascript" src="js/autocomplete.js"></script>
+        <script type="text/javascript" src="js/app.js"></script>
+
+
+        <!-- Angular Material Javascript now available via Google CDN; version 1.0.7 used here -->
+        <script src="js/angular-material/angular-material.min.js"></script>    
+        <script>
+            var app = angular.module('ticketApp', ['ngMaterial', 'autocomplete']);
+
+            app.config(function ($mdDateLocaleProvider) {
+                $mdDateLocaleProvider.formatDate = function (date) {
+                    return moment(date).format('YYYY-MM-DD');
+                };
+            });
+
+            app.controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $http) {
+                $scope.toggleLeft = buildDelayedToggler('left');
+                /**
+                 * Supplies a function that will continue to operate until the
+                 * time is up.
+                 */
+                function debounce(func, wait, context) {
+                    var timer;
+                    return function debounced() {
+                        var context = $scope,
+                                args = Array.prototype.slice.call(arguments);
+                        $timeout.cancel(timer);
+                        timer = $timeout(function () {
+                            timer = undefined;
+                            func.apply(context, args);
+                        }, wait || 10);
+                    };
+                }
+                /**
+                 * Build handler to open/close a SideNav; when animation finishes
+                 * report completion in console
+                 */
+                function buildDelayedToggler(navID) {
+                    return debounce(function () {
+                        // Component lookup should always be available since we are not using `ng-if`
+                        $mdSidenav(navID)
+                                .toggle()
+                                .then(function () {
+                                    $log.debug("toggle " + navID + " is done");
+                                });
+                    }, 200);
+                }
+                function buildToggler(navID) {
+                    return function () {
+                        // Component lookup should always be available since we are not using `ng-if`
+                        $mdSidenav(navID)
+                                .toggle()
+                                .then(function () {
+                                    $log.debug("toggle " + navID + " is done");
+                                });
+                    }
+                }
+
+                //view bookings
+                var user_id = localStorage.getItem("logged_user_id");
+                $http.jsonp("https://airticketbookingapp.herokuapp.com/vehicle/view_booking_passenger/user_id/" + user_id + "?callback=JSON_CALLBACK")
+                        .success(function (data, status, headers, config) {
+                            $scope.results = data;
+                        });
+
+                //cancel booking
+                $scope.cancel_booking = function (booking_id) {
+                    $http.jsonp("https://airticketbookingapp.herokuapp.com/vehicle/update_booking/booking_id/" + booking_id + "/status/1?callback=JSON_CALLBACK")
+                            .success(function (data, status, headers, config) {
+                                alert("You are just cancelled booking");
+                                window.location = "view_vehicle_booking.html";
+                            });
+                }
+
+
+                //links
+                $scope.searchlink = function () {
+                    window.location = 'home.html';
+                }
+                $scope.recentsearchlink = function () {
+                    window.location = 'recentsearches.html';
+                }
+                $scope.cablink = function () {
+                    window.location = 'vehicle_search.html';
+                }
+                $scope.airportlink = function () {
+                    window.location = 'airportmap.html';
+                }
+                $scope.logout = function () {
+                    localStorage.removeItem("logged_user_id");
+                    localStorage.removeItem("logged_user_type");
+                    window.location = 'login.html';
+                }
+                $scope.viewcablink = function () {
+                    window.location = "view_vehicle_booking.html";
+                }
+                $scope.booking = function () {
+                    window.location = "view_booked_ticket.html";
+                }
+            })
+
+
+        </script>
+        <div ng-controller="AppCtrl" layout="column" style="height:600px" ng-cloak>
+            <md-toolbar class="md-primary" md-scroll-shrink ng-if="true" style="background-color: yellow; color: black">
+                <div class="md-toolbar-tools">
+                    <md-button class="md-icon-button" ng-click="toggleLeft()" aria-label="Settings">
+                        <md-icon md-svg-icon="img/icons/menu.svg"></md-icon>
+                    </md-button>
+                    <h1 class="md-toolbar-tools">View Bookings</h1>
+                    <md-button class="md-icon-button" aria-label="More">
+                        <md-icon md-svg-icon="img/more_vert.svg"></md-icon>
+                    </md-button>
+
+                </div>
+            </md-toolbar>
+            <section layout="row" flex>
+                <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+                    <md-toolbar class="md-theme-indigo" style="background-color: yellow">
+                        <h1 class="md-toolbar-tools" style="color: #0c0c0c">Menu</h1>
+                    </md-toolbar>
+                    <md-menu-content layout-fill>
+                        <md-menu-item>
+                            <md-button ng-click="searchlink()">
+                                <span class="glyphicon glyphicon-search"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Search</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="recentsearchlink()">
+                                <span class="glyphicon glyphicon-time"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Recent Search</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="booking()">
+                                <span class="glyphicon glyphicon-book"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;View Bookings</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="cablink()">
+                                <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Call A Cab</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="viewcablink()">
+                                <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Cab Bookings</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="airportlink()">
+                                <span class="glyphicon glyphicon-map-marker"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Airports</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="logout()">
+                                <span class="glyphicon glyphicon-yen"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Logout</strong>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-sidenav>              
+                <md-content flex>
+                    <md-card ng-repeat="result in results">
+                        <md-card-title>
+                            <md-card-title-text align="center">
+                                <strong>From : {{result.from}}</strong>
+                                <strong>To : {{result.to}}</strong>
+                                <strong>Time : {{result.time}}</strong>
+                                <strong>Passengers : {{result.passengers}}</strong>
+                                <strong ng-if="result.status == 2">Status : Accepted</strong>
+                                <strong ng-if="result.status == 3">Status : Rejected</strong>
+                                <strong ng-if="result.status == 0">Status : Pending</strong>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-title>
+                            <md-card-title-text align="center">
+                                <strong>Driver : {{result.username}}</strong>
+                                <strong>Mobile : {{result.mobile}}</strong>
+                                <strong>Email : {{result.email}}</strong>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-title>
+                            <md-card-title-text align="center">
+                                <strong>Vehicle No : {{result.vehicle_no}}</strong>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-actions layout="row" layout-align="end center">
+                            <md-button class=" md-secondary md-warn md-raised" ng-click="cancel_booking(result.id)" style="background-color: #0c0c0c;">Cancel</md-button>
+                        </md-card-actions>
+                    </md-card>
+                    <div ng-show="results.length==0" align="center" style="padding-top: 20%">
+                        <img src="img/no-vehicle-booking.png" class="md-card-image" alt="Washed Out">
+                    </div>
+                </md-content>
+            </section>
+        </div>
+    </body>
+</html>

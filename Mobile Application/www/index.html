@@ -1,0 +1,106 @@
+<html lang="en" ng-app="my-app">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+
+        <link rel="stylesheet" href="node_modules/onsenui/css/onsenui.css"/>
+        <link rel="stylesheet" href="node_modules/onsenui/css/onsen-css-components.css"/>
+        <link rel="stylesheet" href="js/angular-material/angular-material.min.css">
+
+        <script type="text/javascript" src="js/angular.min.js"></script>
+        <script src="node_modules/onsenui/js/onsenui.js"></script>
+        <script src="node_modules/onsenui/js/angular-onsenui.js"></script>
+        <script src="js/angular-animate/angular-animate.min.js"></script>
+        <script src="js/angular-aria/angular-aria.min.js"></script>
+
+
+        <!-- Angular Material Javascript now available via Google CDN; version 1.0.7 used here -->
+        <script src="js/angular-material/angular-material.min.js"></script>
+        <script>
+                    ons.bootstrap()
+                    .controller('SplitterController', function($scope) {
+                    this.load = function(page) {
+                    mySplitter.content.load(page)
+                            .then(function() {
+                            mySplitter.left.close();
+                            });
+                    };
+                    });</script>
+    </head>
+    <body>
+    <ons-splitter var="mySplitter" ng-controller="SplitterController as splitter">
+        <ons-splitter-side side="left" width="220px" collapse swipeable>
+            <ons-page>
+                <ons-list>
+                    <ons-list-item ng-click="splitter.load('home.html')" tappable>
+                        Search
+                    </ons-list-item>
+                    <ons-list-item ng-click="splitter.load('settings.html')" tappable>
+                        Recent Searches
+                    </ons-list-item>
+                    <ons-list-item ng-click="splitter.load('about.html')" tappable>
+                        Watched
+                    </ons-list-item>
+                    <ons-list-item ng-click="splitter.load('about.html')" tappable>
+                        Account
+                    </ons-list-item>
+                    <ons-list-item ng-click="splitter.load('about.html')" tappable>
+                        Cart
+                    </ons-list-item>
+                    <ons-list-item ng-click="splitter.load('about.html')" tappable>
+                        Settings
+                    </ons-list-item>
+                </ons-list>
+            </ons-page>
+        </ons-splitter-side>
+        <ons-splitter-content page="index.html">
+            <ons-tabbar>
+                <ons-tab label="One Way" page="tab1.html" active>
+                </ons-tab>
+                <ons-tab label="Round Trip" page="tab2.html">
+                </ons-tab>
+            </ons-tabbar>
+
+            <ons-template id="tab1.html">
+                <ons-page>
+                    <ons-toolbar>
+                        <div class="center">One Way</div>
+                    </ons-toolbar>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <p>
+                        <ons-input id="from" modifier="underbar" placeholder="From" float ng-model="page.from"></ons-input>
+                        </p>
+                        <p>
+                        <ons-input id="to" modifier="underbar" type="text" placeholder="To" float ng-model="page.to"></ons-input>
+                        </p>
+                        <p>
+                        <md-datepicker ng-model="myDate" md-placeholder="depart"></md-datepicker>
+                        </p>
+                        <p>
+                        <ons-input id="passenger" modifier="underbar" type="text" placeholder="Passengers" float ng-model="page.passenger"></ons-input>
+                        </p>
+                        <p style="margin-top: 30px;">
+                        <ons-button ng-click="page.search()">Search</ons-button>
+                        </p>
+                    </div>
+                </ons-page>
+            </ons-template>
+
+            <ons-template id="tab2.html">
+                <ons-page>
+                    <ons-toolbar>
+                        <div class="center">Tab 2</div>
+                    </ons-toolbar>
+
+                    <p style="text-align: center;">
+                        This is the second page.
+                    </p>
+                </ons-page>
+            </ons-template>
+        </ons-splitter-content>
+    </ons-splitter>
+</body>
+</html>

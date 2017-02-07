@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Payment</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="js/angular-material/angular-material.min.css">
+        <link rel="stylesheet" href="css/home.css">
+        <link rel="stylesheet" href="css/searchresults.css">
+        <style>
+            .test{
+                filter: blur(5px);
+            }
+            md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused .md-input, md-input-container:not(.md-input-invalid).md-input-focused .md-input, md-input-container.md-default-theme:not(.md-input-invalid).md-input-resized .md-input, md-input-container:not(.md-input-invalid).md-input-resized .md-input {
+                border-color: darkgray;
+            }
+
+            label {
+                color: darkgray;
+            }
+
+            md-select.md-default-theme:not([disabled]):focus ._md-select-value, md-select:not([disabled]):focus ._md-select-value {
+                border-bottom-color: darkgray;
+            }
+
+            md-checkbox.md-default-theme:not([disabled]).md-warn.md-checked .md-ink-ripple, md-checkbox:not([disabled]).md-warn.md-checked .md-ink-ripple {
+                color: #2b2b2b;
+            }
+
+            md-checkbox.md-default-theme:not([disabled]).md-warn.md-checked ._md-icon, md-checkbox:not([disabled]).md-warn.md-checked ._md-icon {
+                background-color: #2b2b2b;
+            }
+            md-card.md-default-theme, md-card{
+                background-color: transparent;
+                border:0px;
+            }
+            md-toolbar{
+                background-color: yellow;
+            }
+        </style>
+    </head>
+    <body ng-app="ticketApp" ng-cloak>
+
+        <!-- Angular Material Dependencies -->
+        <script type="text/javascript" src="js/moment.js"></script>
+        <script src="js/angular/angular.min.js"></script>
+        <script src="js/angular-animate/angular-animate.min.js"></script>
+        <script src="js/angular-aria/angular-aria.min.js"></script>
+
+
+        <!-- Angular Material Javascript now available via Google CDN; version 1.0.7 used here -->
+        <script src="js/angular-material/angular-material.min.js"></script>
+
+        <script>
+            var app = angular.module('ticketApp', ['ngMaterial']);
+
+            //config format of datepickers
+            app.config(function ($mdDateLocaleProvider) {
+                $mdDateLocaleProvider.formatDate = function (date) {
+                    return moment(date).format('YYYY-MM-DD');
+                };
+            });
+
+            app.controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $http) {
+
+                //navigation drawer
+                $scope.toggleLeft = buildDelayedToggler('left');
+                /**
+                 * Supplies a function that will continue to operate until the
+                 * time is up.
+                 */
+                function debounce(func, wait, context) {
+                    var timer;
+                    return function debounced() {
+                        var context = $scope,
+                                args = Array.prototype.slice.call(arguments);
+                        $timeout.cancel(timer);
+                        timer = $timeout(function () {
+                            timer = undefined;
+                            func.apply(context, args);
+                        }, wait || 10);
+                    };
+                }
+                /**
+                 * Build handler to open/close a SideNav; when animation finishes
+                 * report completion in console
+                 */
+                function buildDelayedToggler(navID) {
+                    return debounce(function () {
+                        // Component lookup should always be available since we are not using `ng-if`
+                        $mdSidenav(navID)
+                                .toggle()
+                                .then(function () {
+                                    $log.debug("toggle " + navID + " is done");
+                                });
+                    }, 200);
+                }
+                function buildToggler(navID) {
+                    return function () {
+                        // Component lookup should always be available since we are not using `ng-if`
+                        $mdSidenav(navID)
+                                .toggle()
+                                .then(function () {
+                                    $log.debug("toggle " + navID + " is done");
+                                });
+                    }
+                }
+
+                //links
+                $scope.searchlink = function () {
+                    window.location = 'home.html';
+                }
+                $scope.recentsearchlink = function () {
+                    window.location = 'recentsearches.html';
+                }
+                $scope.cablink = function () {
+                    window.location = 'vehicle_search.html';
+                }
+                $scope.airportlink = function () {
+                    window.location = 'airportmap.html';
+                }
+                $scope.logout = function () {
+                    localStorage.removeItem("logged_user_id");
+                    localStorage.removeItem("logged_user_type");
+                    window.location = 'login.html';
+                }
+                $scope.viewcablink = function () {
+                    window.location = "view_vehicle_booking.html";
+                }
+                $scope.booking = function () {
+                    window.location = "view_booked_ticket.html";
+                }
+
+                //book ticket
+                $scope.book = function (shortcode) {
+                    var from = localStorage.getItem("fromPlace");
+                    var date = localStorage.getItem("departDate");
+                    var passenger = localStorage.getItem("passengers");
+                    var directFlight = localStorage.getItem("directFlight");
+                    var to = localStorage.getItem("toPlace");
+                    var totalPrice = localStorage.getItem("totalPrice");
+                    var carrierName = localStorage.getItem("carrierName");
+                    var logged_user_id = localStorage.getItem("logged_user_id");
+                    //search Results
+                    if($scope.card_holder!=null && $scope.card_holder!=undefined && $scope.card_holder!='' &&
+                            $scope.card_number!=null && $scope.card_number!=undefined && $scope.card_number!='' &&
+                            $scope.cvv!=null && $scope.cvv!=undefined && $scope.cvv!='' &&
+                            $scope.month!=null && $scope.month!=undefined && $scope.month!='' &&
+                            $scope.year!=null && $scope.year!=undefined && $scope.year!=''){
+                        $http.jsonp("https://airticketbookingapp.herokuapp.com/booking/flight/user/"+logged_user_id+"/from/" + from + "/to/" + to + "/date/" + date + "/passengers/" + passenger + "/direct/" + directFlight + "/price/"+totalPrice+"/carrier/"+carrierName+"?callback=JSON_CALLBACK")
+                                .success(function (data, status, headers, config) {
+                                    alert("Paid Successfully");
+                                });
+                    }
+                    //window.location = '/results.html';
+                }
+
+                $scope.isStart = true;
+                $scope.checkCard= function () {
+                    $scope.isStart = false;
+                    console.log($scope.card_number);
+                    if(String($scope.card_number).charAt(0)=='4'){
+                        $scope.isVisa = true;
+                    }
+                }
+
+            })
+        </script>
+
+        <div ng-controller="AppCtrl" layout="column" style="height:700px" ng-cloak>
+            <md-toolbar class="md-primary" md-scroll-shrink ng-if="true" style="background-color: yellow; color: black">
+                <div class="md-toolbar-tools">
+                    <md-button class="md-icon-button" ng-click="toggleLeft()" aria-label="Settings">
+                        <md-icon md-svg-icon="img/icons/menu.svg" aria-label="Settings"></md-icon>
+                    </md-button>
+                    <h1 class="md-toolbar-tools">Payment</h1>
+                    <md-button class="md-icon-button" aria-label="More">
+                        <md-icon md-svg-icon="img/more_vert.svg"></md-icon>
+                    </md-button>
+
+                </div>
+            </md-toolbar>
+            <section layout="row" flex>
+                <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+                    <md-toolbar class="md-theme-indigo" style="background-color: yellow">
+                        <h1 class="md-toolbar-tools" style="color: #0c0c0c">Menu</h1>
+                    </md-toolbar>
+                    <md-menu-content layout-fill>
+                        <md-menu-item>
+                            <md-button ng-click="searchlink()">
+                                <span class="glyphicon glyphicon-search"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Search</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="recentsearchlink()">
+                                <span class="glyphicon glyphicon-time"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Recent Search</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="booking()">
+                                <span class="glyphicon glyphicon-book"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;View Bookings</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="cablink()">
+                                <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Call A Cab</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="viewcablink()">
+                                <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Cab Bookings</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="airportlink()">
+                                <span class="glyphicon glyphicon-map-marker"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Airports</strong>
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item>
+                            <md-button ng-click="logout()">
+                                <span class="glyphicon glyphicon-yen"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Logout</strong>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-sidenav>   
+                <md-content flex>
+                    <md-content style="padding-left: 20px;padding-right: 20px;" layout-fill>
+                        <form name="loginForm"><br>
+                            <md-input-container layout-fill>
+                                <img src="img/payments/Visa.png" ng-class="{'test': !isVisa && !isStart}" width="100" height="70" class="md-card-image" alt="Washed Out">
+                                <img src="img/payments/master.gif" ng-class="{'test': isVisa}" width="100" height="70"/>
+                                <img src="img/payments/amex.png" ng-class="{'test': isVisa}" width="100" height="70"/>
+                            </md-input-container><br><br>
+
+                            <md-input-container layout-fill>
+                                <label>Card Holder</label>
+                                <input name="card_holder" required ng-model="card_holder">
+                                <div ng-messages="card_holder.$error" role="alert">
+                                    <div ng-message-exp="['required']">
+                                        Card Holder's Name is required.
+                                    </div>
+                                </div>
+                            </md-input-container><br><br>
+                            <md-input-container layout-fill>
+                                <label>Card Number</label>
+                                <input name="card_number" required ng-model="card_number" type="number" id="card_number" ng-keydown="checkCard()">
+                                <div ng-messages="card_number.$error" role="alert">
+                                    <div ng-message-exp="['required']">
+                                        Card Number is required.
+                                    </div>
+                                </div>
+                            </md-input-container><br><br>
+                            <md-input-container layout-fill>
+                                <label>CVV</label>
+                                <input name="cvv" required ng-model="cvv">
+                                <div ng-messages="cvv.$error" role="alert">
+                                    <div ng-message-exp="['required']">
+                                        CVV is required.
+                                    </div>
+                                </div>
+                            </md-input-container><br><br>
+                            <div flex>
+                                <md-input-container>
+                                    <label>Month</label>
+                                    <input required ng-model="month" type="number" max="12" min="1">
+                                    <div ng-messages="month.$error" role="alert">
+                                        <div ng-message-exp="['required']">
+                                            Invalid Month.
+                                        </div>
+                                    </div>
+                                </md-input-container>
+                                <md-input-container>
+                                    <label>Year</label>
+                                    <input required ng-model="year" type="number" min="2016" max="2030">
+                                    <div ng-messages="year.$error" role="alert" type="number">
+                                        <div ng-message-exp="['required']">
+                                            Invalid Year.
+                                        </div>
+                                    </div>
+                                </md-input-container>
+                            </div>
+                            <div align="center">
+                                <md-button type="submit" class="md-accent md-raised" ng-click="book()" style="background-color: #0c0c0c;">Book</md-button>
+                            </div>
+                        </form>
+                    </md-content>
+                </md-content>
+            </section>
+        </div>
+    </body>
+</html>

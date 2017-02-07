@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+<head>
+    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="js/angular-material/angular-material.min.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/autocomplete.css">
+</head>
+<style>
+    .from input[name="autocompleteField"] {
+        background: url(img/icons/paper-plane.png);
+        background-repeat: no-repeat;
+        background-position: right;
+    }
+
+    .to input[name="autocompleteField"] {
+        background: url(img/icons/paper-plane_backward.png);
+        background-repeat: no-repeat;
+        background-position: right;
+    }
+
+    .passenger_class {
+        background: url(img/icons/passenger.png);
+        background-repeat: no-repeat;
+        background-position: 90%;
+    }
+
+    md-input-container.md-default-theme:not(.md-input-invalid).md-input-focused .md-input, md-input-container:not(.md-input-invalid).md-input-focused .md-input, md-input-container.md-default-theme:not(.md-input-invalid).md-input-resized .md-input, md-input-container:not(.md-input-invalid).md-input-resized .md-input {
+        border-color: darkgray;
+    }
+
+    label {
+        color: darkgray;
+    }
+
+    md-select.md-default-theme:not([disabled]):focus ._md-select-value, md-select:not([disabled]):focus ._md-select-value {
+        border-bottom-color: darkgray;
+    }
+
+    md-checkbox.md-default-theme:not([disabled]).md-warn.md-checked .md-ink-ripple, md-checkbox:not([disabled]).md-warn.md-checked .md-ink-ripple {
+        color: #2b2b2b;
+    }
+
+    md-checkbox.md-default-theme:not([disabled]).md-warn.md-checked ._md-icon, md-checkbox:not([disabled]).md-warn.md-checked ._md-icon {
+        background-color: #2b2b2b;
+    }
+    md-card.md-default-theme, md-card{
+        background-color: transparent;
+        border:0px;
+    }
+    md-toolbar{
+        background-color: yellow;
+    }
+</style>
+<body ng-app="ticketApp" ng-cloak>
+
+<!-- Angular Material Dependencies -->
+<script type="text/javascript" src="js/moment.js"></script>
+<script src="js/angular/angular.min.js"></script>
+<script src="js/angular-animate/angular-animate.min.js"></script>
+<script src="js/angular-aria/angular-aria.min.js"></script>
+<script type="text/javascript" src="js/autocomplete.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular-messages.min.js"></script>
+
+
+<!-- Angular Material Javascript now available via Google CDN; version 1.0.7 used here -->
+<script src="js/angular-material/angular-material.min.js"></script>
+
+<script src="js/jquery.min.js"></script>
+<script>
+    var app = angular.module('ticketApp', ['ngMaterial', 'autocomplete', 'ngMessages']);
+
+    app.config(function ($mdDateLocaleProvider) {
+        $mdDateLocaleProvider.formatDate = function (date) {
+            return moment(date).format('YYYY-MM-DD');
+        };
+    });
+
+    app.controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $http) {
+        $scope.toggleLeft = buildDelayedToggler('left');
+        /**
+         * Supplies a function that will continue to operate until the
+         * time is up.
+         */
+        function debounce(func, wait, context) {
+            var timer;
+            return function debounced() {
+                var context = $scope,
+                        args = Array.prototype.slice.call(arguments);
+                $timeout.cancel(timer);
+                timer = $timeout(function () {
+                    timer = undefined;
+                    func.apply(context, args);
+                }, wait || 10);
+            };
+        }
+
+        /**
+         * Build handler to open/close a SideNav; when animation finishes
+         * report completion in console
+         */
+        function buildDelayedToggler(navID) {
+            return debounce(function () {
+                // Component lookup should always be available since we are not using `ng-if`
+                $mdSidenav(navID)
+                        .toggle()
+                        .then(function () {
+                            $log.debug("toggle " + navID + " is done");
+                        });
+            }, 200);
+        }
+
+        function buildToggler(navID) {
+            return function () {
+                // Component lookup should always be available since we are not using `ng-if`
+                $mdSidenav(navID)
+                        .toggle()
+                        .then(function () {
+                            $log.debug("toggle " + navID + " is done");
+                        });
+            }
+        }
+
+        $scope.departDate = new Date();
+        $scope.minDate = new Date(
+                $scope.departDate.getFullYear(),
+                $scope.departDate.getMonth() - 2,
+                $scope.departDate.getDate());
+        $scope.maxDate = new Date(
+                $scope.departDate.getFullYear(),
+                $scope.departDate.getMonth() + 2,
+                $scope.departDate.getDate());
+        $scope.onlyWeekendsPredicate = function (date) {
+            var day = date.getDay();
+            return day === 0 || day === 6;
+        };
+
+        $scope.userState = '';
+        $scope.states = ('Economy,Premium Economy,Business,First Class').split(',').map(function (state) {
+            return {abbrev: state};
+        });
+
+        //auto complete search
+        $scope.data = [];
+
+        $scope.searchResult = function (query) {
+            $http.jsonp("https://airticketbookingapp.herokuapp.com/searchcountry/autosearch/keyword/" + query + "?callback=JSON_CALLBACK")
+                    .success(function (data, status, headers, config) {
+                        $scope.data = data;
+                    });
+
+            return $scope.data;
+        }
+
+        //auto complete search to
+        $scope.dataTo = [];
+
+        $scope.searchResultTo = function (query) {
+            $http.jsonp("https://airticketbookingapp.herokuapp.com/searchcountry/autosearch/keyword/" + query + "?callback=JSON_CALLBACK")
+                    .success(function (data, status, headers, config) {
+                        $scope.dataTo = data;
+                    });
+            return $scope.dataTo;
+        }
+
+
+        $scope.search = function () {
+            var errors = 0;
+            if ($scope.departDate == '' || $scope.departDate == null || $scope.departDate == 'undifined') {
+                $('#departError').show('fast');
+                errors++;
+            }
+            if ($scope.selectedResultTo == '' || $scope.selectedResultTo == null || $scope.selectedResultTo == 'undifined') {
+                $('#toError').show('fast');
+                errors++;
+            }
+            if ($scope.selectedResultFrom == '' || $scope.selectedResultFrom == null || $scope.selectedResultFrom == 'undifined') {
+                $('#fromError').show('fast');
+                errors++;
+            }
+            if (errors == 0) {
+                var from = $scope.selectedResultFrom;
+                var to = $scope.selectedResultTo;
+                var departDate = moment($scope.departDate).format('YYYY-MM-DD');
+                var passenger = 1;
+                var userState = $scope.userState;
+                var directFlight = $scope.data.cb2;
+                localStorage.setItem("toPlace", to);
+                localStorage.setItem("fromPlace", from);
+
+                if (localStorage.history) {
+                    var history = JSON.parse(localStorage.getItem("history"));
+                    history.push({
+                        from: from,
+                        to: to,
+                        departDate: departDate,
+                        passenger: passenger,
+                        userState: userState,
+                        directFlight: directFlight
+                    });
+                    localStorage.setItem("history", JSON.stringify(history));
+                } else {
+                    var history = [];
+                    history.push({
+                        from: from,
+                        to: to,
+                        departDate: departDate,
+                        passenger: passenger,
+                        userState: userState,
+                        directFlight: directFlight
+                    });
+                    localStorage.setItem("history", JSON.stringify(history));
+                }
+
+                //searchfrom
+                $http.jsonp("https://airticketbookingapp.herokuapp.com/searchcountry/searchcode/keyword/" + from + "?callback=JSON_CALLBACK")
+                        .success(function (data, status, headers, config) {
+                            var fromResult = data;
+                            localStorage.setItem("from", JSON.stringify(fromResult));
+                        });
+
+                //searchto
+                $http.jsonp("https://airticketbookingapp.herokuapp.com/searchcountry/searchcode/keyword/" + to + "?callback=JSON_CALLBACK")
+                        .success(function (data, status, headers, config) {
+                            var toResult = data;
+                            localStorage.setItem("to", JSON.stringify(toResult));
+                            localStorage.setItem("departDate", departDate);
+                            localStorage.setItem("passengers", passenger);
+                            localStorage.setItem("directFlight", directFlight);
+                            window.location = 'startresults.html';
+                        });
+            }
+        }
+
+        //links
+        $scope.searchlink = function () {
+            window.location = 'home.html';
+        }
+        $scope.recentsearchlink = function () {
+            window.location = 'recentsearches.html';
+        }
+        $scope.cablink = function () {
+            window.location = 'vehicle_search.html';
+        }
+        $scope.airportlink = function () {
+            window.location = 'airportmap.html';
+        }
+        $scope.logout = function () {
+            localStorage.removeItem("logged_user_id");
+            localStorage.removeItem("logged_user_type");
+            window.location = 'login.html';
+        }
+        $scope.viewcablink = function () {
+            window.location = "view_vehicle_booking.html";
+        }
+        $scope.booking = function () {
+            window.location = "view_booked_ticket.html";
+        }
+    })
+
+
+</script>
+<div ng-controller="AppCtrl" layout="column" style="height:710px" ng-cloak>
+    <md-toolbar class="md-primary" md-scroll-shrink ng-if="true" style="background-color: yellow; color: black">
+        <div class="md-toolbar-tools">
+            <md-button class="md-icon-button" ng-click="toggleLeft()">
+                <md-icon md-svg-icon="img/icons/menu.svg" aria-label="Settings"></md-icon>
+            </md-button>
+            <h1 class="md-toolbar-tools">Search</h1>
+            <md-button class="md-icon-button" aria-label="More">
+                <md-icon md-svg-icon="img/more_vert.svg"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <section layout="row" flex>
+        <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+            <md-toolbar class="md-theme-indigo" style="background-color: yellow">
+                <h1 class="md-toolbar-tools" style="color: #0c0c0c">Menu</h1>
+            </md-toolbar>
+            <md-menu-content layout-fill>
+                <md-menu-item>
+                    <md-button ng-click="searchlink()">
+                        <span class="glyphicon glyphicon-search"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Search</strong>
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="recentsearchlink()">
+                        <span class="glyphicon glyphicon-time"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Recent
+                        Search</strong>
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="booking()">
+                        <span class="glyphicon glyphicon-book"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;View
+                        Bookings</strong>
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="cablink()">
+                        <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Call A
+                        Cab</strong>
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="viewcablink()">
+                        <span class="glyphicon glyphicon-dashboard"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Cab
+                        Bookings</strong>
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="airportlink()">
+                        <span class="glyphicon glyphicon-map-marker"></span><strong>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Airports</strong>
+                    </md-button>
+                </md-menu-item>
+                <md-menu-item>
+                    <md-button ng-click="logout()">
+                        <span class="glyphicon glyphicon-yen"></span><strong>&nbsp;&nbsp;&nbsp;&nbsp;Logout</strong>
+                    </md-button>
+                </md-menu-item>
+
+            </md-menu-content>
+        </md-sidenav>
+        <md-content flex>
+            <md-content style="padding: 10px">
+                <md-content class="md-padding">
+                    <form ng-submit="$event.preventDefault()" name="searchForm">
+                        <div layout-gt-sm="row">
+                            <md-container class="md-padding">
+                                <md-autocomplete
+                                        flex required
+                                        class="from"
+                                        md-input-name="autocompleteField"
+                                        md-selected-item="selectedResultFrom"
+                                        md-search-text="searchText"
+                                        md-items="result in searchResult(searchText)"
+                                        md-item-text="result"
+                                        md-min-length="1"
+                                        placeholder="&nbsp;&nbsp;&nbsp;&nbsp;From"
+                                        md-floating-label="&nbsp;&nbsp;&nbsp;&nbsp;From"
+                                        ng-model="from">
+                                    <md-item-template>
+                                                <span md-highlight-text="">
+                                                    {{result}}
+                                                </span>
+                                    </md-item-template>
+                                    <md-not-found>
+                                        No matching result were found.
+                                    </md-not-found>
+                                    <div id="fromError" style="display:none; font-size: 12px; color: #dd2c00;">
+                                        Start location is required!
+                                    </div>
+                                </md-autocomplete>
+                            </md-container>
+
+                            <md-container class="md-padding">
+                                <md-autocomplete flex required
+                                                 class="to"
+                                                 md-input-name="autocompleteField"
+                                                 md-selected-item="selectedResultTo"
+                                                 md-search-text="searchTextTo"
+                                                 md-items="result in searchResultTo(searchTextTo)"
+                                                 md-item-text="result"
+                                                 md-min-length="1"
+                                                 placeholder="To"
+                                                 md-floating-label="To"
+                                                 ng-model="to">
+                                    <md-item-template>
+                                        <span md-highlight-text="">
+                                            {{result}}
+                                        </span>
+                                    </md-item-template>
+                                    <md-not-found>
+                                        No matching result were found.
+                                    </md-not-found>
+                                    <div id="toError" style="display:none; font-size: 12px; color: #dd2c00;">
+                                        Destination location is required!
+                                    </div>
+                                </md-autocomplete>
+                            </md-container>
+
+                            <div flex-gt-xs>
+                                <label style="color:#b5b5b5">Depart</label>
+                                <md-datepicker required ng-model="departDate" name="departDate"
+                                               md-placeholder="Enter date"
+                                               md-min-date="minDate" md-max-date="maxDate"></md-datepicker>
+                                <div id="departError" style="display:none; font-size: 12px; color: #dd2c00;">
+                                    This date is required!
+                                </div>
+                            </div>
+                            <br>
+                            <md-select ng-model="userState" class="passenger_class">
+                                <md-option><em>None</em></md-option>
+                                <md-option ng-repeat="state in states" ng-value="state.abbrev">
+                                    {{state.abbrev}}
+                                </md-option>
+                            </md-select>
+                            <br><br>
+                            <md-checkbox
+                                    ng-model="data.cb2"
+                                    aria-label="Checkbox 2"
+                                    ng-true-value="1"
+                                    ng-false-value="0"
+                                    class="md-warn md-align-top-left" flex>
+                                Direct Flights Only <br/>
+                            </md-checkbox>
+                            <br><br><br>
+                            <section layout="row" layout-align="center center">
+                                <md-button class="md-accent md-raised search-button" style="background-color: #0c0c0c;"
+                                           ng-click="search()">Search
+                                </md-button>
+                            </section>
+                        </div>
+                    </form>
+                </md-content>
+            </md-content>
+            <img src="img/background.png" style="width: 100%" class="md-card-image" alt="image caption"/>
+        </md-content>
+    </section>
+</div>
+</body>
+</html>

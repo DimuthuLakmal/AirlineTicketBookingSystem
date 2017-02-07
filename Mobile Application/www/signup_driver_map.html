@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+<head>
+    <title>Sign Up Map</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="js/angular-material/angular-material.min.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/searchresults.css">
+    <style>
+        #map {
+            margin:0;
+            padding: 0;
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+<body ng-app="ticketApp" ng-cloak>
+
+<!--JQuery Dependencies-->
+<script src="js/jquery.min.js"></script>
+
+<!-- Angular Material Dependencies -->
+<script src="js/angular/angular.min.js"></script>
+<script src="js/angular-animate/angular-animate.min.js"></script>
+<script src="js/angular-aria/angular-aria.min.js"></script>
+
+
+<!-- Angular Material Javascript now available via Google CDN; version 1.0.7 used here -->
+<script src="js/angular-material/angular-material.min.js"></script>
+
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&key=AIzaSyB_TX71Tsh6ECj7g1oFxs3KiBXsHOUeikU"></script>
+
+<script>
+    var global_map;
+    var global_marker = null;
+    function initialize() {
+        geocoder = new google.maps.Geocoder();
+        var mapCanvas = document.getElementById('map');
+        var mapOptions = {
+            center: new google.maps.LatLng(6.990410, 81.056614),
+            zoom: 9,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+        var map = new google.maps.Map(mapCanvas, mapOptions);
+        global_map = map;
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+
+<script type="text/javascript">
+    google.maps.event.addDomListener(window, 'load', function () {
+        var places = new google.maps.places.Autocomplete(document.getElementById('txtPlaces'));
+        google.maps.event.addListener(places, 'place_changed', function () {
+            var place = places.getPlace();
+            var address = place.formatted_address;
+            var latitude = place.geometry.location.lat();
+            var longitude = place.geometry.location.lng();
+            var mesg = "Address: " + address;
+            mesg += "\nLatitude: " + latitude;
+            mesg += "\nLongitude: " + longitude;
+            $('#lat').val(latitude);
+            $('#lng').val(longitude);
+
+            if (global_marker != null) {
+                global_marker.setMap(null);
+            }
+
+            global_marker = new google.maps.Marker({
+                position: new google.maps.LatLng(latitude, longitude),
+                map: global_map, // handle of the map
+                draggable: true
+            });
+            google.maps.event.addListener(global_marker, 'dragend', function () {
+                geocodePosition(global_marker.getPosition());
+            });
+        });
+    });
+    function geocodePosition(pos) {
+        geocoder.geocode({
+            latLng: pos
+        }, function (responses) {
+            if (responses && responses.length > 0) {
+                $('#txtPlaces').val(responses[0].formatted_address);
+                updateMarkerAddress(responses[0].formatted_address);
+            } else {
+                updateMarkerAddress('Cannot determine address at this location.');
+            }
+        });
+    }
+</script>
+
+<script>
+    angular
+            .module('ticketApp', ['ngMaterial'])
+            .controller('AppCtrl', function ($scope, $timeout, $mdSidenav, $log, $http) {
+                //dropdown list
+                $scope.meal_preference = '';
+                $scope.meals = ('Vegetarian,Chicken,Vegan').split(',').map(function (meal) {
+                    return {abbrev: meal};
+                });
+
+                //singup
+                $scope.signup = function () {
+                    var username = localStorage.getItem("username");
+                    var password = localStorage.getItem("password");
+                    var licence_no = localStorage.getItem("licence_no");
+                    var mobile = localStorage.getItem("mobile");
+                    var country = localStorage.getItem("country");
+                    var email = localStorage.getItem("email");
+                    var lat = document.getElementById("lat").value;
+                    var lng = document.getElementById("lng").value;
+
+                    $http.jsonp("https://airticketbookingapp.herokuapp.com/users/signup/username/" + username + "/password/" + password + "/email/" + email + "/mobile/" + mobile + "/country/" + country + "/type/Driver/licence_no/" + licence_no + "/latitude/"+lat+"/longitude/"+lng+"?callback=JSON_CALLBACK")
+                            .success(function (data, status, headers, config) {
+                                window.location = "login.html";
+                            });
+                }
+
+            })
+
+
+</script>
+<div ng-controller="AppCtrl" layout="column" style="height:600px" ng-cloak>
+    <md-toolbar class="md-primary" md-scroll-shrink ng-if="true" style="background-color: yellow; color: black">
+        <h1 class="md-toolbar-tools">Sign Up</h1>
+    </md-toolbar>
+    <section>
+        <md-content layout="row">
+            <md-content style="padding-left: 20px;padding-right: 20px; top:15%;" layout-fill><br>
+                <form name="loginForm">
+                    <md-input-container layout-fill>
+                        <input type="hidden" name="lat" id="lat" ng-model="lat">
+                        <input type="hidden" name="lng" id="lng" ng-model="lng">
+                        <input class="w-input input-form" id="txtPlaces" type="text" name="txtPlaces" required="required">
+                    </md-input-container>
+                    <div align="center">
+                        <md-button type="submit" class="md-accent md-raised" ng-click="signup()">Sign Up</md-button>
+                    </div>
+                </form>
+            </md-content>
+        </md-content>
+        <md-content layout="row">
+            <div id="map">
+            </div>
+        </md-content>
+    </section>
+</div>
+</body>
+</html>
